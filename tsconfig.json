@@ -19,7 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@models/*": ["./models/*"],
+      "@lib/*": ["./lib/*"],
+      "@controllers/*": ["./lib/controllers/*"],
+      "@types/*": ["./types/*"],
+      "@services/*": ["./services/*"]
     }
   },
   "include": [
