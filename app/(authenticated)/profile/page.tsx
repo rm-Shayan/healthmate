@@ -3,17 +3,18 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
-import { updateAccountThunk, updateAvatarThunk, changePasswordThunk } from "@/redux/feature/user/user.thunk";
+import { updateAccountThunk, updateAvatarThunk, changePasswordThunk, deleteAccountThunk } from "@/redux/feature/user/user.thunk";
 import {
     User,
     Mail,
     Lock,
     Camera,
     Save,
-    CheckCircle2,
     AlertCircle,
     Loader2,
-    ShieldCheck
+    ShieldCheck,
+    Trash2,
+    AlertTriangle
 } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import { toast } from "sonner";
@@ -33,6 +34,7 @@ export default function ProfilePage() {
 
     // UI State
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -80,6 +82,16 @@ export default function ProfilePage() {
                 toast.error("Failed to upload avatar.");
                 setAvatarPreview(null);
             }
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        const result = await dispatch(deleteAccountThunk());
+        if (deleteAccountThunk.fulfilled.match(result)) {
+            toast.success("Account deleted successfully.");
+            // Redirection normally handled by auth state change or layout
+        } else {
+            toast.error(result.payload as string || "Failed to delete account.");
         }
     };
 
@@ -250,6 +262,46 @@ export default function ProfilePage() {
                                 Change Password
                             </button>
                         </form>
+                    </div>
+                    {/* Danger Zone */}
+                    <div className="bg-red-50/50 rounded-[2.5rem] border border-red-100 p-8 sm:p-10 shadow-sm relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-8 opacity-5">
+                            <Trash2 className="text-red-900" size={80} />
+                        </div>
+                        <h3 className="text-lg font-black text-red-900 mb-4 flex items-center gap-3 relative">
+                            <span className="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center"><AlertTriangle size={16} /></span>
+                            Danger Zone
+                        </h3>
+                        <p className="text-red-700/70 text-sm font-bold mb-8 relative max-w-md">
+                            Once you delete your account, there is no going back. Please be certain before proceeding.
+                        </p>
+
+                        {!showDeleteConfirm ? (
+                            <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                className="w-full sm:w-auto px-10 py-4 bg-red-600 text-white font-black rounded-2xl shadow-xl shadow-red-900/10 hover:bg-red-700 transition-all active:scale-95 flex items-center justify-center gap-3"
+                            >
+                                <Trash2 size={20} />
+                                Delete My Account
+                            </button>
+                        ) : (
+                            <div className="flex flex-col sm:flex-row gap-4 items-center animate-in fade-in zoom-in-95 duration-300">
+                                <button
+                                    onClick={handleDeleteAccount}
+                                    disabled={loading}
+                                    className="w-full sm:w-auto px-10 py-4 bg-red-700 text-white font-black rounded-2xl shadow-xl shadow-red-900/20 hover:bg-red-800 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+                                >
+                                    {loading ? <Loader2 className="animate-spin" size={20} /> : <Trash2 size={20} />}
+                                    Confirm Deletion
+                                </button>
+                                <button
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                    className="w-full sm:w-auto px-10 py-4 bg-white text-slate-600 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all active:scale-95"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
