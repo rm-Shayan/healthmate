@@ -5,8 +5,8 @@ import { asyncHandler } from "@lib/api/asynchandler";
 import { ApiError } from "@lib/api/ApiError";
 import { ApiResponse } from "@lib/api/ApiResponse";
 import { cookies } from "next/headers";
-import axios from "axios";
 import { verifyJwt } from "@lib/helpers/verify-jwt";
+import { sendMail } from "@/lib/utils/resend";
 
 // --- 1. SIGNUP WITH OTP ---
 export const registerUser = asyncHandler(async (req: NextRequest) => {
@@ -34,21 +34,22 @@ export const registerUser = asyncHandler(async (req: NextRequest) => {
   });
 
   try {
-    const emailRes = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/send-email`,
-      {
-        email: process.env.MAIL_USER,
-        sendTo: email,
-        subject: "HealthMate - Verify Your Email",
-        text: `Your OTP for email verification is: ${otp}. It expires in 1 hour.`,
-      },
-    );
+    const result = await sendMail({
+      email: process.env.MAIL_USER!,
+      sendTo: email,
+      subject: "HealthMate - Verify Your Email",
+      text: `Your OTP for email verification is: ${otp}. It expires in 1 hour.`,
+    });
 
-    console.log("Email Response:", emailRes.data);
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    console.log("Email sent successfully to:", email);
   } catch (error: any) {
     console.error(
-      "❌ Email भेजنے میں error:",
-      error?.response?.data || error.message,
+      "❌ Email sending error:",
+      error.message,
     );
 
     // 🔥 important decision
@@ -153,21 +154,22 @@ export const forgotPassword = asyncHandler(async (req: NextRequest) => {
   await user.save({ validateBeforeSave: false });
 
   try {
-    const emailRes = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/send-email`,
-      {
-        email: process.env.MAIL_USER,
-        sendTo: email,
-        subject: "HealthMate - Verify Your Email",
-        text: `Your OTP for email verification is: ${otp}. It expires in 1 hour.`,
-      },
-    );
+    const result = await sendMail({
+      email: process.env.MAIL_USER!,
+      sendTo: email,
+      subject: "HealthMate - Verify Your Email",
+      text: `Your OTP for email verification is: ${otp}. It expires in 1 hour.`,
+    });
 
-    console.log("Email Response:", emailRes.data);
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    console.log("Email sent successfully to:", email);
   } catch (error: any) {
     console.error(
-      "❌ Email भेजنے میں error:",
-      error?.response?.data || error.message,
+      "❌ Email sending error:",
+      error.message,
     );
 
     // 🔥 important decision

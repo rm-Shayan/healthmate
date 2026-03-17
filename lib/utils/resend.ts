@@ -92,7 +92,7 @@ export async function sendMail({
 
     return {
       success: false,
-      error: 'Failed to send email',
+      error: error instanceof Error ? error.message : 'Failed to send email',
     };
   }
 }
