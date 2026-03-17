@@ -1,7 +1,7 @@
 // lib/proxy/auth.ts
 import { NextRequest, NextResponse } from "next/server";
 import { verifyJwt } from "@/lib/helpers/verify-jwt";
-import { ApiError } from "../api/ApiError";
+import { ApiError } from "@/lib/api/ApiError";
 
 export async function authMiddleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;

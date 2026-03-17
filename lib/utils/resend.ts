@@ -2,37 +2,47 @@
 
 import nodemailer from 'nodemailer';
 
-// ✅ Validate env variables once
-const {
-  MAIL_HOST,
-  MAIL_USER,
-  MAIL_PASS,
-  MAIL_PORT,
-} = process.env;
+// ✅ Lazy transporter initialization to prevent build-time failures
+let transporter: any = null;
 
-if (!MAIL_HOST || !MAIL_USER || !MAIL_PASS) {
-  throw new Error('❌ Missing SMTP environment variables');
+function getTransporter() {
+  const {
+    MAIL_HOST,
+    MAIL_USER,
+    MAIL_PASS,
+    MAIL_PORT,
+  } = process.env;
+
+  if (!MAIL_HOST || !MAIL_USER || !MAIL_PASS) {
+     // If we're in a build environment, we might not have these, but we shouldn't throw at module load
+     console.warn('⚠️ SMTP environment variables are missing. Email functionality will be disabled.');
+     return null;
+  }
+
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      host: MAIL_HOST,
+      port: Number(MAIL_PORT) || 587,
+      secure: Number(MAIL_PORT) === 465,
+      auth: {
+        user: MAIL_USER,
+        pass: MAIL_PASS,
+      },
+    });
+  }
+  return transporter;
 }
-
-// ✅ Create transporter once (reuse for performance)
-const transporter = nodemailer.createTransport({
-  host: MAIL_HOST,
-  port: Number(MAIL_PORT) || 587,
-  secure: Number(MAIL_PORT) === 465, // true only for 465
-  auth: {
-    user: MAIL_USER,
-    pass: MAIL_PASS,
-  },
-});
 
 // ✅ Optional: verify only once (not on every request)
 let isTransporterVerified = false;
 
 async function verifyTransporter() {
   if (isTransporterVerified) return;
+  const t = getTransporter();
+  if (!t) throw new Error('❌ Missing SMTP environment variables');
 
   try {
-    await transporter.verify();
+    await t.verify();
     isTransporterVerified = true;
     console.log('✅ SMTP Server Ready');
   } catch (error) {
@@ -56,11 +66,14 @@ export async function sendMail({
   html?: string;
 }) {
   try {
+    const t = getTransporter();
+    if (!t) throw new Error('❌ Missing SMTP environment variables');
+
     // verify once
     await verifyTransporter();
 
-    const info = await transporter.sendMail({
-      from: email || MAIL_USER, // fallback
+    const info = await t.sendMail({
+      from: email || process.env.MAIL_USER, // fallback
       to: sendTo,
       subject,
       text: text || '',
