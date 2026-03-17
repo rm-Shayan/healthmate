@@ -1,21 +1,85 @@
-import { Resend } from 'resend';
+'use server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+import nodemailer from 'nodemailer';
 
-export const sendEmail = async (email: string, subject: string, otp: string) => {
+// ✅ Validate env variables once
+const {
+  MAIL_HOST,
+  MAIL_USER,
+  MAIL_PASS,
+  MAIL_PORT,
+} = process.env;
+
+if (!MAIL_HOST || !MAIL_USER || !MAIL_PASS) {
+  throw new Error('❌ Missing SMTP environment variables');
+}
+
+// ✅ Create transporter once (reuse for performance)
+const transporter = nodemailer.createTransport({
+  host: MAIL_HOST,
+  port: Number(MAIL_PORT) || 587,
+  secure: Number(MAIL_PORT) === 465, // true only for 465
+  auth: {
+    user: MAIL_USER,
+    pass: MAIL_PASS,
+  },
+});
+
+// ✅ Optional: verify only once (not on every request)
+let isTransporterVerified = false;
+
+async function verifyTransporter() {
+  if (isTransporterVerified) return;
+
   try {
-
-    console.log(" before email send")
-    await resend.emails.send({
-      from: 'HealthMate <onboarding@resend.dev>', // Baad mein apna domain add kar lena
-      to: email,
-      subject: subject,
-      html: `<h1>HealthMate OTP</h1><p>Aapka code hai: <strong>${otp}</strong>. Yeh 1 ghante tak valid hai.</p>`,
-    });
-    
-    console.log(`after send mail`)
+    await transporter.verify();
+    isTransporterVerified = true;
+    console.log('✅ SMTP Server Ready');
   } catch (error) {
-    console.error("Email sending failed:", error);
-
+    console.error('❌ SMTP Verification Failed:', error);
+    throw error;
   }
-};
+}
+
+// ✅ Main function
+export async function sendMail({
+  email,
+  sendTo,
+  subject,
+  text,
+  html,
+}: {
+  email: string;
+  sendTo: string;
+  subject: string;
+  text?: string;
+  html?: string;
+}) {
+  try {
+    // verify once
+    await verifyTransporter();
+
+    const info = await transporter.sendMail({
+      from: email || MAIL_USER, // fallback
+      to: sendTo,
+      subject,
+      text: text || '',
+      html: html || '',
+    });
+
+    console.log('📧 Message Sent:', info.messageId);
+    console.log('📨 Mail sent to:', sendTo);
+
+    return {
+      success: true,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    console.error('❌ Email sending failed:', error);
+
+    return {
+      success: false,
+      error: 'Failed to send email',
+    };
+  }
+}

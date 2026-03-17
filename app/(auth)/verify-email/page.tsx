@@ -10,14 +10,13 @@ import {
     ArrowRight,
     Loader2,
     AlertCircle,
-    Sparkles,
     Mail
 } from "lucide-react";
-import Link from "next/link";
+
 
 function VerifyEmailForm() {
     const dispatch = useDispatch<AppDispatch>();
-    const { loading, error } = useSelector((state: RootState) => state.auth);
+    const { loading,error } = useSelector((state: RootState) => state.auth);
     const router = useRouter();
     const searchParams = useSearchParams();
 

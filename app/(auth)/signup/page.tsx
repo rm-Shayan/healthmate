@@ -30,7 +30,7 @@ export default function SignupPage() {
         e.preventDefault();
         const resultAction = await dispatch(registerUserThunk(formData));
         if (registerUserThunk.fulfilled.match(resultAction)) {
-            router.push("/dashboard");
+           router.push(`/verify-email?email=${formData.email}`);
         }
     };
 

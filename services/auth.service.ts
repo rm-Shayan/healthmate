@@ -9,6 +9,7 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
+      credentials: "include",
     });
     return await response.json();
   },
@@ -19,6 +20,7 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp }),
+      credentials: "include",
     });
     return await response.json();
   },
@@ -29,6 +31,7 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
+      credentials: "include",
     });
     return await response.json();
   },
@@ -39,6 +42,7 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
+      credentials: "include",
     });
     return await response.json();
   },
@@ -49,6 +53,7 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(resetData), // email, otp, newPassword
+      credentials: "include",
     });
     return await response.json();
   },
@@ -57,6 +62,7 @@ export const authService = {
   logout: async () => {
     const response = await fetch(`${BASE_URL}/logout`, {
       method: "POST",
+      credentials: "include",
     });
     return await response.json();
   },

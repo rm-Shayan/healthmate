@@ -49,13 +49,13 @@ export default function AuthenticatedLayout({
     }
 
     return (
-        <div className="flex min-h-screen bg-white overflow-x-hidden">
+        <div className="flex min-h-screen bg-slate-50/50 overflow-x-hidden">
             {/* Sidebar with mobile state */}
             <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
             <div className="flex-grow flex flex-col min-w-0">
                 <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
-                <main className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full transition-all duration-300">
+                <main className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
                     {children}
                 </main>
             </div>
@@ -63,7 +63,7 @@ export default function AuthenticatedLayout({
             {/* Mobile Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden animate-in fade-in duration-300"
+                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-40 lg:hidden animate-in fade-in duration-500"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}

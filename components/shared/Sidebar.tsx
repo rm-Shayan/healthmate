@@ -56,13 +56,16 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             </button>
 
             {/* Logo */}
-            <div className="flex items-center gap-3 mb-12">
-                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-900/10">
-                    <Shield size={24} />
+            <div className="flex items-center gap-4 mb-16">
+                <div className="w-12 h-12 bg-primary text-white rounded-[1.25rem] flex items-center justify-center shadow-2xl shadow-primary/20 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                    <Shield size={28} />
                 </div>
-                <h1 className="text-2xl font-black text-slate-900 tracking-tighter">
-                    Health<span className="text-primary">Mate</span>
-                </h1>
+                <div>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tighter leading-none">
+                        Health<span className="text-primary italic">Mate</span>
+                    </h1>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Platform</p>
+                </div>
             </div>
 
             {/* Navigation */}
@@ -89,27 +92,31 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
             {/* Action Card */}
             <div className="mt-auto pt-8">
-                <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 relative overflow-hidden group hidden sm:block">
+                <div className="bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-blue-50/50 via-slate-50 to-white p-6 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group/card shadow-sm mb-6 hidden sm:block">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-10 -mt-10 blur-2xl group-hover/card:bg-primary/10 transition-colors" />
+                    
                     <div className="relative z-10">
-                        <p className="text-slate-900 font-extrabold text-sm mb-2 italic lowercase tracking-tight">Got a new report?</p>
+                        <p className="text-slate-900 font-black text-sm mb-3 tracking-tight">Need to track data?</p>
                         <Link
                             href="/reports/upload"
                             onClick={() => setIsOpen?.(false)}
-                            className="flex items-center justify-center gap-2 w-full py-3 bg-primary text-white font-black rounded-xl shadow-md hover:bg-blue-800 transition-all text-xs"
+                            className="flex items-center justify-center gap-2 w-full py-3.5 bg-primary text-white font-black rounded-2xl shadow-xl shadow-primary/20 hover:bg-blue-800 hover:-translate-y-0.5 transition-all text-[11px] uppercase tracking-wider"
                         >
-                            <PlusCircle size={14} />
-                            ADD RECORD
+                            <PlusCircle size={16} />
+                            ADD NEW RECORD
                         </Link>
                     </div>
                 </div>
 
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-4 px-4 py-4 w-full mt-6 text-slate-400 font-bold hover:text-red-500 transition-colors uppercase text-xs tracking-widest"
-                >
-                    <LogOut size={18} />
-                    <span>Logout Account</span>
-                </button>
+                <div className="px-4">
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-4 py-4 w-full text-slate-400 font-black hover:text-red-500 transition-all uppercase text-[10px] tracking-[0.2em] group"
+                    >
+                        <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
+                        <span>Logout Account</span>
+                    </button>
+                </div>
             </div>
         </aside>
     );

@@ -5,7 +5,7 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // ❌ api/auth ko skip karo
-  if (pathname.startsWith("/api/auth")) {
+  if (pathname.startsWith("/api/auth")||pathname.startsWith("/api/send-email")) {
     return NextResponse.next();
   }
 

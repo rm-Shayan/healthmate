@@ -12,11 +12,15 @@ export const userService = {
     const response = await fetch(`${USER_BASE_URL}/me`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
     });
     if (!response.ok) {
       try {
         const errorData = await response.json();
-        return { success: false, message: errorData.message || "Failed to fetch user" };
+        return {
+          success: false,
+          message: errorData.message || "Failed to fetch user",
+        };
       } catch {
         const errorText = await response.text();
         return { success: false, message: errorText || "Failed to fetch user" };
@@ -31,16 +35,21 @@ export const userService = {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      credentials: "include",
     });
     return await response.json();
   },
 
   // 3. Change Password (POST /api/user/change-password)
-  changePassword: async (passwords: { oldPassword: string; newPassword: string }) => {
+  changePassword: async (passwords: {
+    oldPassword: string;
+    newPassword: string;
+  }) => {
     const response = await fetch(`${USER_BASE_URL}/change-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(passwords),
+      credentials: "include",
     });
     return await response.json();
   },
@@ -55,6 +64,7 @@ export const userService = {
       method: "PUT",
       // Note: Browser automatically sets Content-Type for FormData
       body: formData,
+      credentials: "include",
     });
     return await response.json();
   },
@@ -64,6 +74,7 @@ export const userService = {
     const response = await fetch(`${USER_BASE_URL}/delete`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
     });
     return await response.json();
   },
@@ -73,14 +84,21 @@ export const userService = {
     const response = await fetch(`${AUTH_BASE_URL}/refresh-token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include", // 🔥 FIX
     });
     if (!response.ok) {
       try {
         const errorData = await response.json();
-        return { success: false, message: errorData.message || "Failed to refresh token" };
+        return {
+          success: false,
+          message: errorData.message || "Failed to refresh token",
+        };
       } catch {
         const errorText = await response.text();
-        return { success: false, message: errorText || "Failed to refresh token" };
+        return {
+          success: false,
+          message: errorText || "Failed to refresh token",
+        };
       }
     }
     return await response.json();
